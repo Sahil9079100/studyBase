@@ -1,0 +1,1 @@
+#Attendance Management System, can be used in colleges to mark attendance of students and to manage all the attendance. Students can also see there attendance and analyse it.
