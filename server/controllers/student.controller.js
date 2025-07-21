@@ -6,6 +6,7 @@ import { Classes } from "../models/class.module.js";
 // import { Class } from "../models/class.model.js";
 import bcrypt from "bcrypt";
 import CryptoJS from "crypto-js";
+import { Attendance } from "../models/Attendance.module.js";
 
 const register_student = async (req, res) => {
     try {
@@ -38,7 +39,6 @@ const register_student = async (req, res) => {
         if (!target_class) {
             return R.c(res, 400, "No class found for the provided batchname/section/sem");
         }
-
         const newStudent = new Student({
             name,
             email,
@@ -69,6 +69,30 @@ const register_student = async (req, res) => {
 
         target_class.students.push(newStudent._id);
         await target_class.save();
+
+        // const allSubjects = [...target_class.subjects, ...target_class.labs];
+
+        const months = {};
+        for (let i = 1; i <= 12; i++) {
+            months[i.toString()] = [];
+        }
+
+        const subjectMap = {};
+        target_class.subjects.forEach(sub => {
+            subjectMap[sub.name] = { ...months };
+        });
+
+        const labMap = {};
+        target_class.labs.forEach(lab => {
+            labMap[lab.name] = { ...months };
+        });
+
+        await Attendance.create({
+            studentId: newStudent._id,
+            classId: target_class._id,
+            subjects: subjectMap,
+            labs: labMap
+        });
 
         return R.s(res, "Student Registered", { studentId: newStudent });
     } catch (error) {
@@ -138,7 +162,7 @@ const get_student_profile = async (req, res) => {
         // await client.set("s", "hello")
         // await client.expire("s",5)
 
-        
+
         // const result = await client.get("ok")
         const result = await client.lrange(`${student._id}`, 0, -1);
         console.log("student name is:", result)
@@ -152,4 +176,59 @@ const get_student_profile = async (req, res) => {
     }
 }
 
-export { register_student, login_student, get_student_profile }
+const fixAttendanceRecords = async (req, res) => {
+    try {
+
+        const students = await Student.find({});
+
+        let createdCount = 0;
+        const months = {};
+        for (let i = 1; i <= 12; i++) {
+            months[i.toString()] = [];
+        }
+
+        for (const student of students) {
+            const existingAttendance = await Attendance.findOne({ studentId: student._id });
+            if (existingAttendance) continue;
+
+            // Fetch the class document
+            const classDoc = await Classes.findById(student.classid);
+            if (!classDoc) {
+                console.warn(`Class not found for student ${student._id}`);
+                continue;
+            }
+
+            // Create subject map
+            const subjectMap = {};
+            classDoc.subjects.forEach(sub => {
+                subjectMap[sub.name] = { ...months };
+            });
+
+            // Create lab map
+            const labMap = {};
+            classDoc.labs.forEach(lab => {
+                labMap[lab.name] = { ...months };
+            });
+
+            await Attendance.create({
+                studentId: student._id,
+                classId: classDoc._id,
+                subjects: subjectMap,
+                labs: labMap
+            });
+
+            createdCount++;
+        }
+
+        return res.status(200).json({
+            message: `${createdCount} attendance records created for students without them.`,
+        });
+
+
+    } catch (error) {
+        console.error("fixAttendanceRecords error:", error);
+        return R.c(res, 500, "Internal Server Error");
+    }
+}
+
+export { register_student, login_student, get_student_profile, fixAttendanceRecords }

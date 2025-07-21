@@ -35,7 +35,7 @@ const register_teacher = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // ✅ Step 1: Find classes where teacher teaches
+        // step1: Find classes where teacher teaches
         const allClasses = await Classes.find({});
         const classIds = [];
         const labIds = [];
@@ -168,8 +168,76 @@ const get_teacher_profile = async (req, res) => {
     }
 };
 
+// const mark_attendance = async (req, res) => {
+//     try {
+//         const { classId, attendanceData } = req.body; // attendanceData should be an array of objects with studentId and status
+//         const teacherId = req.teacherId;
 
-export { register_teacher, login_teacher, get_teacher_profile };
+//         if (!classId || !attendanceData || !Array.isArray(attendanceData)) {
+//             return R.c(res, 400, "Invalid request data");
+//         }
+
+//         const classDoc = await Classes.findById(classId);
+//         if (!classDoc) {
+//             return R.c(res, 404, "Class not found");
+//         }
+
+//         // Check if the teacher is authorized to mark attendance for this class
+//         if (!classDoc.subjects.some(subj => subj.teacherId === teacherId) &&
+//             !classDoc.labs.some(lab => lab.teacherId === teacherId)) {
+//             return R.c(res, 403, "You are not authorized to mark attendance for this class");
+//         }
+
+//         // Update attendance for each student
+//         for (const entry of attendanceData) {
+//             const { studentId, status } = entry;
+//             if (!studentId || !status) continue; // Skip invalid entries
+
+//             const studentIndex = classDoc.students.findIndex(s => s._id.toString() === studentId);
+//             if (studentIndex !== -1) {
+//                 classDoc.students[studentIndex].attendance.push({
+//                     date: new Date(),
+//                     status: status // 'present' or 'absent'
+//                 });
+//             }
+//         }
+
+//         await classDoc.save();
+
+//         return R.s(res, "Attendance marked successfully", classDoc);
+//     } catch (error) {
+//         console.error("mark_attendance error:", error);
+//         return R.c(res, 500, "Internal Server Error");
+//     }
+// }
+
+//#################################### IMPORTANT STUFF START ####################################
+
+const mark_attendance = async (req, res) => {
+    try {
+        const { classid, subjectName, attendance } = req.body;
+
+        // Logging the incoming data for debug
+        console.log("Class ID:", classid);
+        console.log("Subject Name:", subjectName);
+        console.log("Attendance Array:", attendance);
+
+        // Just respond back for now to verify
+        return res.status(200).json({
+            message: "Data received successfully",
+            classid,
+            subjectName,
+            attendance,
+        });
+    } catch (error) {
+        console.error("Error in markAttendance:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+//##################################### IMPORTANT STUFF END #####################################
+
+export { register_teacher, login_teacher, get_teacher_profile, mark_attendance };
 
 
 

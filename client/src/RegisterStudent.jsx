@@ -7,9 +7,9 @@ import API from '../axios.config';
 const RegisterStudent = () => {
 
     const [formData, setFormData] = useState({
-        name: "Aradhya",
-        phoneno: "1212",
-        password: "1212",
+        name: "Bhidu",
+        phoneno: "1222",
+        password: "1222",
         email: "aradhya@gmail.com",
         fatherno: "2121",
         motherno: "2121",
@@ -18,7 +18,7 @@ const RegisterStudent = () => {
         hostel_number: 0, //--
         room_number: 0, //--
         branchname: "IT",
-        section: "a2",
+        section: "g1",
         sem: "2"
     });
     /*
@@ -40,12 +40,12 @@ const RegisterStudent = () => {
     const handleRegister = async (e) => {
         e.preventDefault()
         console.log(formData)
-        // try {
-        //     const responce = await API.post('/api/student/register_student', formData)
-        //     console.log("responce is: ", responce)
-        // } catch (error) {
-        //     console.log(error)
-        // }
+        try {
+            const responce = await API.post('/api/student/register_student', formData)
+            console.log("responce is: ", responce)
+        } catch (error) {
+            console.log(error)
+        }
 
     }
     return (

@@ -114,3 +114,6 @@ const RegisterTeacher = () => {
 }
 
 export default RegisterTeacher
+
+
+//So i am sending classID and the ids of studentids in array, so there are two methoda that i can search each student and submit there attendance
