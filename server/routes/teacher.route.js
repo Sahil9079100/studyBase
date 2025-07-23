@@ -12,7 +12,7 @@ const router = express.Router()
 router.post('/register_teacher', register_teacher);
 router.post('/login_teacher', login_teacher);
 router.get("/get_teacher_profile", authTeacher, get_teacher_profile)
-router.post("/mark_attendance", authTeacher, mark_attendance);
+router.post("/mark_attendance", mark_attendance);
 
 
 export default router

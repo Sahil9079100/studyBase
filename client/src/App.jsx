@@ -33,7 +33,8 @@ function App() {
                     <Route path="/teacher/:id" element={<ProfileTeacher />} />
                     <Route path="/teacher/:id/classes" element={<ShowClasses />} />
                     <Route path="/teacher/:id/classes/:classnum" element={<EachClass />} />
-                    <Route path="/teacher/:id/classes/:classnum/:teacherid" element={<SubjectStudent />} />
+                    <Route path="/teacher/:id/classes/:classnum/:type/:teacherid" element={<SubjectStudent />} />
+                    <Route path="/teacher/:id/classes/:classnum/:type/:teacherid" element={<SubjectStudent />} />
                 </Routes>
             </Router>
         </Suspense>

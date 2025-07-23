@@ -4,6 +4,7 @@ import { Teacher } from "../models/teacher.module.js";
 import { Classes } from "../models/class.module.js";
 import { R } from "../utilits/res.helper.js";
 import { generateStudentToken } from "../utilits/tokenGen.helper.js";
+import { Attendance } from "../models/Attendance.module.js";
 
 const register_teacher = async (req, res) => {
     try {
@@ -167,73 +168,281 @@ const get_teacher_profile = async (req, res) => {
         return R.c(res, 500, "Internal Server Error");
     }
 };
+/*
+const mark_attendance = async (req, res) => {
+    try {
+        const { classId, attendanceData } = req.body; // attendanceData should be an array of objects with studentId and status
+        const teacherId = req.teacherId;
 
-// const mark_attendance = async (req, res) => {
-//     try {
-//         const { classId, attendanceData } = req.body; // attendanceData should be an array of objects with studentId and status
-//         const teacherId = req.teacherId;
+        if (!classId || !attendanceData || !Array.isArray(attendanceData)) {
+            return R.c(res, 400, "Invalid request data");
+        }
 
-//         if (!classId || !attendanceData || !Array.isArray(attendanceData)) {
-//             return R.c(res, 400, "Invalid request data");
-//         }
+        const classDoc = await Classes.findById(classId);
+        if (!classDoc) {
+            return R.c(res, 404, "Class not found");
+        }
 
-//         const classDoc = await Classes.findById(classId);
-//         if (!classDoc) {
-//             return R.c(res, 404, "Class not found");
-//         }
+        // Check if the teacher is authorized to mark attendance for this class
+        if (!classDoc.subjects.some(subj => subj.teacherId === teacherId) &&
+            !classDoc.labs.some(lab => lab.teacherId === teacherId)) {
+            return R.c(res, 403, "You are not authorized to mark attendance for this class");
+        }
 
-//         // Check if the teacher is authorized to mark attendance for this class
-//         if (!classDoc.subjects.some(subj => subj.teacherId === teacherId) &&
-//             !classDoc.labs.some(lab => lab.teacherId === teacherId)) {
-//             return R.c(res, 403, "You are not authorized to mark attendance for this class");
-//         }
+        // Update attendance for each student
+        for (const entry of attendanceData) {
+            const { studentId, status } = entry;
+            if (!studentId || !status) continue; // Skip invalid entries
 
-//         // Update attendance for each student
-//         for (const entry of attendanceData) {
-//             const { studentId, status } = entry;
-//             if (!studentId || !status) continue; // Skip invalid entries
+            const studentIndex = classDoc.students.findIndex(s => s._id.toString() === studentId);
+            if (studentIndex !== -1) {
+                classDoc.students[studentIndex].attendance.push({
+                    date: new Date(),
+                    status: status // 'present' or 'absent'
+                });
+            }
+        }
 
-//             const studentIndex = classDoc.students.findIndex(s => s._id.toString() === studentId);
-//             if (studentIndex !== -1) {
-//                 classDoc.students[studentIndex].attendance.push({
-//                     date: new Date(),
-//                     status: status // 'present' or 'absent'
-//                 });
-//             }
-//         }
+        await classDoc.save();
 
-//         await classDoc.save();
+        return R.s(res, "Attendance marked successfully", classDoc);
+    } catch (error) {
+        console.error("mark_attendance error:", error);
+        return R.c(res, 500, "Internal Server Error");
+    }
+}
+*/
 
-//         return R.s(res, "Attendance marked successfully", classDoc);
-//     } catch (error) {
-//         console.error("mark_attendance error:", error);
-//         return R.c(res, 500, "Internal Server Error");
-//     }
-// }
 
 //#################################### IMPORTANT STUFF START ####################################
 
-const mark_attendance = async (req, res) => {
+// const mark_attendance = async (req, res) => {             // this one is slow and first prototype, took 3-4 seconds for 6 students, so not good.
+//     try {
+//         const { classid, subjectName, attendance, type } = req.body;
+
+//         if (!Array.isArray(attendance) || !subjectName || !classid || !type) {
+//             return res.status(400).json({ message: "Missing fields" });
+//         }
+
+//         const today = new Date();
+//         const month = String(today.getMonth() + 1); // "1" to "12"
+//         const dayIndex = today.getDate() - 1; // 0-based index
+//         let count = 0;
+
+//         const target = type === "lab" ? "labs" : "subjects";
+
+
+//         for (const { studentId, status } of attendance) {
+//             const studentAttendance = await Attendance.findOne({ studentId, classId: classid });
+
+//             if (!studentAttendance[target].has(subjectName)) {
+//                 studentAttendance[target].set(subjectName, {});
+//             }
+
+//             // if (!studentAttendance.subjects.has(subjectName)) {
+//             //     studentAttendance.subjects.set(subjectName, {});
+//             // }
+
+//             const targetItem = studentAttendance[target].get(subjectName);
+
+//             if (!targetItem[month]) {
+//                 targetItem[month] = [];
+//             }
+
+//             // const subject = studentAttendance.subjects.get(subjectName);
+
+//             // if (!subject[month]) {
+//             //     subject[month] = [];
+//             // }
+
+//             // while (subject[month].length <= dayIndex) {
+//             //     subject[month].push(null);
+//             // }
+//             while (targetItem[month].length <= dayIndex) {
+//                 targetItem[month].push(null);
+//             }
+
+//             // subject[month][dayIndex] = status === 'present' ? 1 : 0;
+//             targetItem[month][dayIndex] = status === 'present' ? 1 : 0;
+
+
+//             // studentAttendance.subjects.set(subjectName, subject);
+//             studentAttendance[target].set(subjectName, targetItem);
+
+
+//             await studentAttendance.save();
+//             count++
+//         }
+
+//         return R.s(res, "Attendance marked successfully", count)
+
+//     } catch (error) {
+//         console.error("Error in markAttendance:", error);
+//         return res.status(500).json({ error: "Internal Server Error" });
+//     }
+// }
+
+
+// const mark_attendance = async (req, res) => {                    // tHIS IS for Bulk attendance with bulkWrite() optimization.
+//     try {
+//         const { classid, subjectName, attendance, type } = req.body;
+
+//         if (!Array.isArray(attendance) || !subjectName || !classid || !type) {
+//             return res.status(400).json({ message: "Missing fields" });
+//         }
+
+//         const today = new Date();
+//         const month = String(today.getMonth() + 1); // "1" to "12"
+//         const dayIndex = today.getDate() - 1;
+
+//         const target = type === "lab" ? "labs" : "subjects";
+
+//         const studentIds = attendance.map(a => a.studentId);
+//         const allDocs = await Attendance.find({
+//             studentId: { $in: studentIds },
+//             classId: classid
+//         });
+
+//         const docMap = new Map();
+//         for (const doc of allDocs) {
+//             docMap.set(doc.studentId.toString(), doc);
+//         }
+
+//         const bulkOps = [];
+
+//         for (const { studentId, status } of attendance) {
+//             const doc = docMap.get(studentId);
+//             if (!doc) continue;
+
+//             const targetMap = doc[target] || new Map();
+
+//             if (!targetMap.has(subjectName)) {
+//                 targetMap.set(subjectName, {});
+//             }
+
+//             const sub = targetMap.get(subjectName);
+
+//             if (!sub[month]) {
+//                 sub[month] = [];
+//             }
+
+//             while (sub[month].length <= dayIndex) {
+//                 sub[month].push(null);
+//             }
+
+//             sub[month][dayIndex] = status === 'present' ? 1 : 0;
+//             targetMap.set(subjectName, sub);
+
+//             doc[target] = targetMap;
+
+//             bulkOps.push({
+//                 updateOne: {
+//                     filter: { _id: doc._id },
+//                     update: {
+//                         $set: {
+//                             [target]: doc[target]
+//                         }
+//                     }
+//                 }
+//             });
+//         }
+
+//         if (bulkOps.length > 0) {
+//             await Attendance.bulkWrite(bulkOps);
+//         }
+
+//         return R.s(res, "Attendance marked successfully", bulkOps.length);
+
+//     } catch (error) {
+//         console.error("Error in markAttendance:", error);
+//         return res.status(500).json({ error: "Internal Server Error" });
+//     }
+// };
+
+const mark_attendance = async (req, res) => {   // TRYING final version, it has "retry" logic if some studentId got failed, will keep this one for production and will improve it also if needed
     try {
-        const { classid, subjectName, attendance } = req.body;
+        const { classid, subjectName, attendance, type } = req.body;
 
-        // Logging the incoming data for debug
-        console.log("Class ID:", classid);
-        console.log("Subject Name:", subjectName);
-        console.log("Attendance Array:", attendance);
+        if (!Array.isArray(attendance) || !subjectName || !classid || !type) {
+            return res.status(400).json({ message: "Missing fields" });
+        }
 
-        // Just respond back for now to verify
-        return res.status(200).json({
-            message: "Data received successfully",
-            classid,
-            subjectName,
-            attendance,
+        const today = new Date();
+        const month = String(today.getMonth() + 1)              // "1" 2 "12"
+        const dayIndex = today.getDate() - 1; // 0 -based
+        const target = type === "lab" ? "labs" : "subjects";
+
+        const studentIds = attendance.map(a => a.studentId);
+        const records = await Attendance.find({
+            studentId: { $in: studentIds },
+            classId: classid
         });
+
+        const recordMap = new Map();
+        for (const doc of records) {
+            recordMap.set(doc.studentId.toString(), doc);
+        }
+
+        const bulkOps = [];
+
+        for (const { studentId, status } of attendance) {
+            const doc = recordMap.get(studentId);
+            if (!doc) continue;
+
+            const subMap = doc[target] || new Map();
+
+            if (!subMap.has(subjectName)) {
+                subMap.set(subjectName, {});
+            }
+
+            const subjectRecord = subMap.get(subjectName);
+
+            if (!subjectRecord[month]) {
+                subjectRecord[month] = [];
+            }
+
+            while (subjectRecord[month].length <= dayIndex) {
+                subjectRecord[month].push(null);
+            }
+
+            subjectRecord[month][dayIndex] = status === 'present' ? 1 : 0;
+
+            subMap.set(subjectName, subjectRecord);
+
+            bulkOps.push({
+                updateOne: {
+                    filter: { _id: doc._id },
+                    update: { $set: { [`${target}`]: subMap } }
+                }
+            });
+        }
+
+
+        //it caused me error 8 TIMES... , stay alert while using bulkWrite, it get messed uo real quickkkk.
+        const result = await Attendance.bulkWrite(bulkOps, { ordered: false })
+
+        // retry logic starts here, will improve it later if needed, For now it works just fine.
+        const failedIndexes = result.getWriteErrors?.()?.map(e => e.index) || []
+
+        if (failedIndexes.length > 0) {
+            const failedOps = failedIndexes.map(i => bulkOps[i]);
+
+            const retryResult = await Attendance.bulkWrite(failedOps, { ordered: false })
+
+            if (retryResult.getWriteErrors?.()?.length > 0) {
+                console.warn("Some attendance updates still failed after retry.")
+            }
+        }
+
+        return R.s(res, "Attendance marked successfully", bulkOps.length)
+
     } catch (error) {
-        console.error("Error in markAttendance:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error in markAttendance:", error)
+        return res.status(500).json({ error: "Internal Server Error" })
     }
-}
+};
+
+
 
 //##################################### IMPORTANT STUFF END #####################################
 

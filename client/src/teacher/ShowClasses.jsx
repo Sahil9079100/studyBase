@@ -25,10 +25,10 @@ const ClassesTeacher = () => {
             })}
         </div> */}
 
-        <div className='flex justify-center items-center w-full gap-6 my-3'>
+        {/* <div className='flex justify-center items-center w-full gap-6 my-3'>
             <div onClick={() => { setsubpage(true); setlabpage(false) }} className='bg-red-400/30'>Subject</div>
             <div onClick={() => { setsubpage(false); setlabpage(true) }} className='bg-red-400/30'>Labs</div>
-        </div>
+        </div> */}
 
         <div className='flex flex-col gap-2 justify-center items-center p-2'>
             {teacherData.classes.map((elem, idx) => (
@@ -42,6 +42,8 @@ const ClassesTeacher = () => {
                 </div>
             ))}
         </div>
+
+        
 
     </>)
 }
