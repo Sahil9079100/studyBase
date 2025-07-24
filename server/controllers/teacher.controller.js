@@ -5,6 +5,7 @@ import { Classes } from "../models/class.module.js";
 import { R } from "../utilits/res.helper.js";
 import { generateStudentToken } from "../utilits/tokenGen.helper.js";
 import { Attendance } from "../models/Attendance.module.js";
+import client from "../utilits/redis.helper.js";
 
 const register_teacher = async (req, res) => {
     try {
@@ -362,11 +363,7 @@ const mark_attendance = async (req, res) => {
 const mark_attendance = async (req, res) => {   // TRYING final version, it has "retry" logic if some studentId got failed, will keep this one for production and will improve it also if needed
     try {
         const { classid, subjectName, attendance, type } = req.body;
-
-        if (!Array.isArray(attendance) || !subjectName || !classid || !type) {
-            return res.status(400).json({ message: "Missing fields" });
-        }
-
+        if (!Array.isArray(attendance) || !subjectName || !classid || !type) { return res.status(400).json({ message: "Missing fields" }) }
         const today = new Date();
         const month = String(today.getMonth() + 1)              // "1" 2 "12"
         const dayIndex = today.getDate() - 1; // 0 -based
@@ -379,9 +376,7 @@ const mark_attendance = async (req, res) => {   // TRYING final version, it has 
         });
 
         const recordMap = new Map();
-        for (const doc of records) {
-            recordMap.set(doc.studentId.toString(), doc);
-        }
+        for (const doc of records) { recordMap.set(doc.studentId.toString(), doc) }
 
         const bulkOps = [];
 
@@ -391,22 +386,16 @@ const mark_attendance = async (req, res) => {   // TRYING final version, it has 
 
             const subMap = doc[target] || new Map();
 
-            if (!subMap.has(subjectName)) {
-                subMap.set(subjectName, {});
-            }
+            if (!subMap.has(subjectName)) { subMap.set(subjectName, {}) }
 
             const subjectRecord = subMap.get(subjectName);
 
-            if (!subjectRecord[month]) {
-                subjectRecord[month] = [];
-            }
+            if (!subjectRecord[month]) { subjectRecord[month] = [] }
 
             while (subjectRecord[month].length <= dayIndex) {
                 subjectRecord[month].push(null);
             }
-
             subjectRecord[month][dayIndex] = status === 'present' ? 1 : 0;
-
             subMap.set(subjectName, subjectRecord);
 
             bulkOps.push({
@@ -416,37 +405,67 @@ const mark_attendance = async (req, res) => {   // TRYING final version, it has 
                 }
             });
         }
-
-
         //it caused me error 8 TIMES... , stay alert while using bulkWrite, it get messed uo real quickkkk.
         const result = await Attendance.bulkWrite(bulkOps, { ordered: false })
-
         // retry logic starts here, will improve it later if needed, For now it works just fine.
         const failedIndexes = result.getWriteErrors?.()?.map(e => e.index) || []
-
         if (failedIndexes.length > 0) {
             const failedOps = failedIndexes.map(i => bulkOps[i]);
-
             const retryResult = await Attendance.bulkWrite(failedOps, { ordered: false })
-
             if (retryResult.getWriteErrors?.()?.length > 0) {
                 console.warn("Some attendance updates still failed after retry.")
             }
         }
-
         return R.s(res, "Attendance marked successfully", bulkOps.length)
-
     } catch (error) {
         console.error("Error in markAttendance:", error)
         return res.status(500).json({ error: "Internal Server Error" })
     }
 };
 
-
-
 //##################################### IMPORTANT STUFF END #####################################
 
-export { register_teacher, login_teacher, get_teacher_profile, mark_attendance };
+const marked_attendance_redis = async (req, res) => {
+    try {
+        const { classid, subjectName, attendance, type } = req.attendanceData;
+        const teacherId = req.teacherId || req.body.teacherId; // coming from auth js for attendance
+
+        if (!Array.isArray(attendance) || !subjectName || !classid || !type || !teacherId) {
+            return R.c(res, 400, "Missing fields")
+        }
+        // console.log(req.attendanceData);
+        // console.log(teacherId)
+
+        const dataToStore = {
+            classId: classid,
+            subjectName,
+            attendance,
+            type,
+            teacherId,
+            submittedAt: new Date().toISOString(),
+            retryCount: 0
+        }
+        const fetch_attendance_data = {
+            classId: classid,
+            subjectName,
+            attendance,
+            type,
+            teacherId,
+        }
+        // *NOTE* :-  i am using FIFO order
+        await client.rpush("attendance:pending_attendance", JSON.stringify(dataToStore))
+        await client.lpush("attendance:search_attendance", JSON.stringify(fetch_attendance_data));
+        // const pending = await client.lrange("attendance:pending_attendance", 0, -1)
+        // console.log(JSON.stringify(pending.map(JSON.parse), null, 2))
+
+        return R.c(res, 200, "Attendance saved to Redis queue")
+    } catch (error) {
+        console.error("marked_attendance_redis error:", error)
+        return R.c(res, 500, "Internal Server Error")
+    }
+}
+
+export { register_teacher, login_teacher, get_teacher_profile, mark_attendance, marked_attendance_redis };
 
 
 
@@ -457,6 +476,6 @@ export { register_teacher, login_teacher, get_teacher_profile, mark_attendance }
 4. generate around 10 classes DONE
 5. genarete around 15 teachers - each will have at least 3 classes in under DONE
 6. for [3,4,5] generate demo data from gpt, with GIT names - familier DONE
-7. ***IMP*** make the mark attendance backend - first with on-each-click, then bulk submit
+7. ***IMP*** make the mark attendance backend - first with on-each-click, then bulk submit DONE
 8. initiate socket.io code - basic setup and user connection only.
 */
