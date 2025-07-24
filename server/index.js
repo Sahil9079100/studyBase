@@ -8,6 +8,7 @@ import { createServer } from 'http';
 import adminRoute from "./routes/admin.route.js";
 import studentRoute from "./routes/student.route.js"
 import teacherRoute from "./routes/teacher.route.js"
+import { startAttendanceScheduler } from "./utilits/cron_jobs/attendanceScheduler.cron.js";
 // import socket from "./socket.js";
 
 import path from "path";
@@ -45,7 +46,7 @@ app.use(cors({
 
 app.use("/api/student", studentRoute)
 app.use("/api/admin", adminRoute)
-app.use("/api/teacher",teacherRoute)
+app.use("/api/teacher", teacherRoute)
 
 
 dbconnect()
@@ -61,6 +62,8 @@ dbconnect()
     .catch((error) => {
         console.error(`Error from app.js:::-> ${error}`);
     });
+
+startAttendanceScheduler()
 
 app.get("/", (req, res) => {
     res.send("hello study base :)");
