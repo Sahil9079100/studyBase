@@ -46,7 +46,7 @@ const SubjectStudent = () => {
             return
         }
         try {
-            const response = await API.post("/api/teacher/mark_attendance", data)
+            const response = await API.post("/api/teacher/marked_attendance_redis", data)
             console.log(response.data)
         } catch (err) {
             console.error("Error submitting attendance:::> ", err);
