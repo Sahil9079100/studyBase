@@ -2,12 +2,17 @@ import { useState } from 'react'
 // import catGIF from './assets/cat.gif';
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import AttendancePanel from './student/AttendancePanel.jsx';
 // import ProfileTeacher from './teacher/ProfileTeacher.jsx';
 
-const Login_Student = lazy(() => import('./LoginStudent.jsx'));
-const Register_Student = lazy(() => import('./RegisterStudent.jsx'));
-const Profile_Student = lazy(() => import('./ProfileStudent.jsx'))
-const Student_class = lazy(() => import('./Student_class.jsx')) //RegisterTeacher
+const Login_Student = lazy(() => import('./student/LoginStudent.jsx'));
+const Register_Student = lazy(() => import('./student/RegisterStudent.jsx'));
+const Profile_Student = lazy(() => import('./student/ProfileStudent.jsx'))
+const Student_class = lazy(() => import('./student/Student_class.jsx'))
+const AttendancePanel = lazy(() => import('./student/AttendancePanel.jsx'))
+
+
+//RegisterTeacher
 const RegisterTeacher = lazy(() => import('./teacher/RegisterTeacher.jsx'))
 const Loginteacher = lazy(() => import('./teacher/Loginteacher.jsx'))
 const ProfileTeacher = lazy(() => import('./teacher/ProfileTeacher.jsx'))
@@ -25,7 +30,8 @@ function App() {
                     <Route path="/login" element={<Login_Student />} />
                     <Route path="/register" element={<Register_Student />} />
                     <Route path="/student/:id" element={<Profile_Student />} />
-                    <Route path="/student/class/:id" element={<Student_class />} />
+                    <Route path="/student/:id/class" element={<Student_class />} />
+                    <Route path="/student/:id/attendance" element={<AttendancePanel />} />
 
 
                     <Route path="/teacher/register" element={<RegisterTeacher />} />
