@@ -1,9 +1,11 @@
 import { Attendance } from "../models/Attendance.module.js";
+import { startAttendanceScheduler } from "../utilits/cron_jobs/attendanceScheduler.cron.js";
 
 export async function writeAttendanceToDB({ classId, subjectName, attendance, type }) {
     if (!Array.isArray(attendance) || !subjectName || !classId || !type) {
         throw new Error("Missing required fields");
     }
+    // console.log("writeAttendanceToDB func", attendance);
 
     const today = new Date();
     const month = String(today.getMonth() + 1); // "1" to "12"
@@ -42,6 +44,8 @@ export async function writeAttendanceToDB({ classId, subjectName, attendance, ty
         while (subjectRecord[month].length <= dayIndex) {
             subjectRecord[month].push(null);
         }
+
+        // console.log("status", status)
 
         subjectRecord[month][dayIndex] = status === 'present' ? 1 : 0;
         subMap.set(subjectName, subjectRecord);

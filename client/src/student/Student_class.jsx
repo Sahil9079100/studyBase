@@ -11,7 +11,7 @@ const Student_class = () => {
     const [labpage, setlabpage] = useState(false)
 
     useEffect(() => {
-        console.log(studentData.classid)
+        console.log(studentData)
     }, [studentData])
 
     // useEffect(() => {

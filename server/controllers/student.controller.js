@@ -164,12 +164,14 @@ const get_student_profile = async (req, res) => {
 
 
         // const result = await client.get("ok")
-        const result = await client.lrange(`${student._id}`, 0, -1);
-        console.log("student name is:", result)
-        console.log(result[0])
-        console.log(result[1])
+        // const result = await client.lrange(`${student._id}`, 0, -1);
+        // console.log("student name is:", result)
+        // console.log(result[0])
+        // console.log(result[1])
 
-        return R.s(res, "Student profile fetched successfully", student);
+        const attendanceRecords = await Attendance.find({ studentId });
+
+        return R.s(res, "Student profile fetched successfully", { student, attendanceRecords });
     } catch (error) {
         console.error("get_student_profile error:", error);
         return R.c(res, 500, "Internal Server Error");
@@ -231,4 +233,16 @@ const fixAttendanceRecords = async (req, res) => {
     }
 }
 
-export { register_student, login_student, get_student_profile, fixAttendanceRecords }
+const get_student_attendance = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const attendanceRecords = await Attendance.find({ studentId });
+
+        return R.s(res, "Attendance records fetched successfully", attendanceRecords);
+    } catch (error) {
+        console.error("get_student_attendance error:", error);
+        return R.c(res, 500, "Internal Server Error");
+    }
+}
+
+export { register_student, login_student, get_student_profile, fixAttendanceRecords, get_student_attendance }

@@ -15,6 +15,7 @@ export function startAttendanceScheduler() {
                     const data = JSON.parse(jsonString);
                     // console.log(data)
                     const updated = await writeAttendanceToDB(data);
+                    // console.log("startAttendanceScheduler func", data.attendance);
                     console.log(`[SCHEDULE UPDATE] Attendance updated for class ${data.classId} [${data.subjectName}], count: ${updated}`);
                 } catch (err) {
                     console.error('[SCHEDULE UPDATE] Failed to write one attendance record:', err);
