@@ -12,7 +12,7 @@ const Student_class = lazy(() => import('./student/Student_class.jsx'))
 const AttendancePanel = lazy(() => import('./student/AttendancePanel.jsx'))
 const CalenderAttendanceView = lazy(() => import('./student/CalenderAttendanceView.jsx'))
 const DetailAnalysis = lazy(() => import('./student/DetailAnalysis.jsx'))
-
+const SubjectPage = lazy(() => import('./student/SubjectPage.jsx'))
 
 //Teacher
 const RegisterTeacher = lazy(() => import('./teacher/RegisterTeacher.jsx'))
@@ -32,10 +32,11 @@ function App() {
                     <Route path="/login" element={<Login_Student />} />
                     <Route path="/register" element={<Register_Student />} />
                     <Route path="/student/:id" element={<Profile_Student />} />
-                    <Route path="/student/:id/class" element={<Student_class />} />
+                    {/* <Route path="/student/:id/class" element={<Student_class />} /> */}
                     <Route path="/student/:id/attendance" element={<AttendancePanel />} />
                     <Route path="/student/:id/attendance/calendar" element={<CalenderAttendanceView />} />
                     <Route path="/student/:id/attendance/analysis" element={<DetailAnalysis />} />
+                    <Route path="/student/:id/class" element={<SubjectPage />} />
 
 
                     <Route path="/teacher/register" element={<RegisterTeacher />} />

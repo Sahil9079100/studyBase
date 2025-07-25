@@ -326,8 +326,7 @@ const ProfileStudent = () => {
 
 
 
-                {/* BOTTOM BAR STARTS here.... */}
-                <div className="fixed bottom-0 left-0 w-full h-16 bg-white border-t border-gray-300 flex justify-around items-center shadow-md">
+                {/* <div className="fixed bottom-0 left-0 w-full h-16 bg-white border-t border-gray-300 flex justify-around items-center shadow-md">
                     <div className="bg-[#E3ECFF] px-3 py-1 pt-2 rounded-lg flex flex-col items-center justify-center text-center">
                         <FiHome className="text-xl text-gray-600" />
                         <span className="text-[10px] text-gray-600 font-medium mt-1">Home</span>
@@ -348,8 +347,9 @@ const ProfileStudent = () => {
                         <RiUser3Line className="text-xl text-gray-600" />
                         <span className="text-[10px] text-gray-600 font-medium mt-1">Profile</span>
                     </div>
-                </div>
+                </div> */}
 
+                {/* BOTTOM BAR STARTS here.... */}
                 <div className="fixed bottom-0 left-0 w-full h-16 bg-white border-t border-gray-300 flex justify-around items-center shadow-md">
                     <div className="flex flex-col items-center justify-center text-center">
                         <FiHome className="text-xl text-[#627ef8]" />
@@ -359,7 +359,7 @@ const ProfileStudent = () => {
                         <AiOutlineFileDone className="text-xl text-gray-600" />
                         <span className="text-[10px] text-gray-600 font-medium mt-1">Attendance</span>
                     </div>
-                    <div className="flex flex-col items-center justify-center text-center">
+                    <div onClick={() => { navi(`/student/${profile.student._id}/class`); }} className="flex flex-col items-center justify-center text-center">
                         <SiGoogleclassroom className="text-xl text-gray-600" />
                         <span className="text-[10px] text-gray-600 font-medium mt-1">Classroom</span>
                     </div>

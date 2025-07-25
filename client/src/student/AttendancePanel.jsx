@@ -56,10 +56,10 @@ const AttendancePanel = () => {
 
                 {navbarOpen ?
                     <div className="w-48 h-fit absolute border border-gray-300 bg-white z-30 top-20 right-4 flex flex-col items-center justify-start rounded-lg shadow-lg">
-                        <button onClick={()=>{navi("calendar")}} className="w-full py-3 text-sm text-gray-700 font-medium hover:bg-blue-100 hover:text-blue-600 rounded-t-lg transition-all ease-in-out">
+                        <button onClick={() => { navi("calendar") }} className="w-full py-3 text-sm text-gray-700 font-medium hover:bg-blue-100 hover:text-blue-600 rounded-t-lg transition-all ease-in-out">
                             View Calendar
                         </button>
-                        <button onClick={()=>{navi("analysis")}} className="w-full py-3 text-sm text-gray-700 font-medium hover:bg-blue-100 hover:text-blue-600 rounded-b-lg transition-all ease-in-out">
+                        <button onClick={() => { navi("analysis") }} className="w-full py-3 text-sm text-gray-700 font-medium hover:bg-blue-100 hover:text-blue-600 rounded-b-lg transition-all ease-in-out">
                             Detailed Analytics
                         </button>
                     </div> : null}
@@ -131,7 +131,7 @@ const AttendancePanel = () => {
                     <AiOutlineFileDone className="text-xl text-[#627ef8]" />
                     <span className="text-[10px] text-[#627ef8] font-medium mt-1">Attendance</span>
                 </div>
-                <div className="flex flex-col items-center justify-center text-center">
+                <div onClick={() => { navi(`/student/${studentData._id}/class`); }} className="flex flex-col items-center justify-center text-center">
                     <SiGoogleclassroom className="text-xl text-gray-600" />
                     <span className="text-[10px] text-gray-600 font-medium mt-1">Classroom</span>
                 </div>
