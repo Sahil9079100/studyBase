@@ -20,8 +20,38 @@ import { RiUser3Line } from "react-icons/ri";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import PropagateLoader from "react-spinners/PropagateLoader";
 
+import { FiCalendar } from "react-icons/fi";
+// import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+
+import { MdOutlineRemoveRedEye } from "react-icons/md";
+import { LuChartColumn } from "react-icons/lu";
 
 
+const CustomProgressBar = ({ value, color, max = 100 }) => {
+    return (
+        <div style={{ width: '100%', maxWidth: '400px', margin: '0px 0' }}>
+            <div
+                style={{
+                    height: '8px',
+                    width: '100%',
+                    backgroundColor: '#d6d6d6', // Background trail color
+                    borderRadius: '5px',
+                    overflow: 'hidden',
+                }}
+            >
+                <div
+                    style={{
+                        height: '100%',
+                        borderRadius: '5px',
+                        width: `${(value / max) * 100}%`, // Calculate progress width
+                        backgroundColor: `${color}`, // Progress bar color
+                        transition: 'width 0.3s ease', // Smooth transition
+                    }}
+                ></div>
+            </div>
+        </div>
+    );
+};
 
 
 const ProfileStudent = () => {
@@ -248,7 +278,7 @@ const ProfileStudent = () => {
                         <p className='text-xs'>click to view more...</p>
                     </div> */}
 
-                    {/* <div className='bg-white w-full flex flex-col items-start justify-center border-2 rounded-xl relative transition-all ease-in-out '
+                    <div className='bg-white w-full flex flex-col items-start justify-center border-2 rounded-xl relative transition-all ease-in-out '
                         style={{ boxShadow: "2px 3px 2px rgba(0, 0, 0, 0.1)" }}>
                         <div className='border-b-2 w-full mt-5 px-5 pb-5 flex items-center justify-between'>
                             <div>
@@ -320,7 +350,110 @@ const ProfileStudent = () => {
 
                         </div>
 
-                    </div> */}
+                    </div>
+
+
+
+                    {/* <div className='w-full h-full flex flex-col items-center justify-start'> */}
+
+
+                    <div className='bg-red-200/0  flex flex-col items-center justify-center gap-4 p- m- w-full'>
+                        {/* <div className='bg-white w-full flex flex-col items-start justify-center p-5 border-2 rounded-xl relative active:scale-[99%] transition-all ease-in-out'
+                            style={{ boxShadow: "2px 3px 2px rgba(0, 0, 0, 0.1)" }}>
+                            <h6 className='text-sm text-black/70 font-medium'>Classes This Month</h6>
+                            <h1 className='text-2xl font-bold'>42</h1>
+                            <div className='absolute top-6 right-6 bg-[#DBEAFE] p-3 rounded-full text-blue-500 text-lg'><FiCalendar /></div>
+                        </div>
+
+                        <div className='bg-white w-full flex flex-col items-start justify-center p-5 border-2 rounded-xl relative active:scale-[99%] transition-all ease-in-out'
+                            style={{ boxShadow: "2px 3px 2px rgba(0, 0, 0, 0.1)" }}>
+                            <h6 className='text-sm text-black/70 font-medium'>Present Days</h6>
+                            <h1 className='text-2xl font-bold text-green-600'>35</h1>
+                            <div className='absolute top-6 right-6 bg-[#e2fedb] p-3 rounded-full text-green-500 text-[20px]'><MdOutlineRemoveRedEye /></div>
+                        </div>
+
+                        <div className='bg-white w-full flex flex-col items-start justify-center p-5 border-2 rounded-xl relative active:scale-[99%] transition-all ease-in-out'
+                            style={{ boxShadow: "2px 3px 2px rgba(0, 0, 0, 0.1)" }}>
+                            <h6 className='text-sm text-black/70 font-medium'>Absent Days</h6>
+                            <h1 className='text-2xl font-bold text-red-600'>7</h1>
+                            <div className='absolute top-6 right-6 bg-[#fedbdb] p-3 rounded-full text-red-500 text-[18px]'><FiCalendar /></div>
+                        </div>
+
+                        <div className='bg-white w-full flex flex-col items-start justify-center p-5 border-2 rounded-xl relative active:scale-[99%] transition-all ease-in-out'
+                            style={{ boxShadow: "2px 3px 2px rgba(0, 0, 0, 0.1)" }}>
+                            <h6 className='text-sm text-black/70 font-medium'>Attendance Rate</h6>
+                            <h1 className='text-2xl font-bold text-blue-600'>80.00%</h1>
+                            <div className='absolute top-6 right-6 bg-[#dbedfe] p-3 rounded-full text-blue-500 text-[18px]'><LuChartColumn /></div>
+                        </div> */}
+
+
+                        <div className='bg-white w-full flex flex-col items-start justify-center p-5 border-2 rounded-xl relative mt-6'
+                            style={{ boxShadow: "2px 3px 2px rgba(0, 0, 0, 0.1)" }}>
+                            <h1 className='text-1xl font-semibold items-center'>Monthly Subject Performance</h1>
+                            <h6 className='text-sm text-black/70 font-medium'>Attendance Rate</h6>
+                            <hr className='border-b-[1px] w-full absolute left-0 top-[80px]' />
+                            <h6 className='text-xs text-black/70 font-medium mt-4'></h6>
+                            <div className='w-full flex flex-col gap-3 mt-4'>
+
+                                <div className='bg-white w-full flex flex-col items-start justify-center px-4 py-4 border-2 rounded-xl relative active:scale-[99%] transition-all ease-in-out'>
+                                    <div className='flex gap-3 items-center'><FaCircle className='text-xs text-[#2B7FFF]' />Mathematics</div>
+                                    <div className='text-xs text-black/70 font-medium mt-2 w-full flex justify-between items-center'>
+                                        <div>This Month</div>
+                                        <div className='text-base text-black'>70%</div>
+                                    </div>
+                                    <CustomProgressBar value={70} color={"#2B7FFF"} />
+                                    <div className='text-xs text-black/60 font-medium w-full flex justify-between items-center mt-2'>35/42 classes</div>
+                                    <div></div>
+                                </div>
+
+                                <div className='bg-white w-full flex flex-col items-start justify-center px-4 py-4 border-2 rounded-xl relative active:scale-[99%] transition-all ease-in-out'>
+                                    <div className='flex gap-3 items-center'><FaCircle className='text-xs text-[#00C950]' />Physics</div>
+                                    <div className='text-xs text-black/70 font-medium mt-2 w-full flex justify-between items-center'>
+                                        <div>This Month</div>
+                                        <div className='text-base text-black'>84%</div>
+                                    </div>
+                                    <CustomProgressBar value={84} color={"#00C950"} />
+                                    <div className='text-xs text-black/60 font-medium w-full flex justify-between items-center mt-2'>35/42 classes</div>
+                                    <div></div>
+                                </div>
+
+                                <div className='bg-white w-full flex flex-col items-start justify-center px-4 py-4 border-2 rounded-xl relative active:scale-[99%] transition-all ease-in-out'>
+                                    <div className='flex gap-3 items-center'><FaCircle className='text-xs text-[#AD46FF]' />Chemistry</div>
+                                    <div className='text-xs text-black/70 font-medium mt-2 w-full flex justify-between items-center'>
+                                        <div>This Month</div>
+                                        <div className='text-base text-black'>72%</div>
+                                    </div>
+                                    <CustomProgressBar value={72} color={"#AD46FF"} />
+                                    <div className='text-xs text-black/60 font-medium w-full flex justify-between items-center mt-2'>35/42 classes</div>
+                                    <div></div>
+                                </div>
+
+                                <div className='bg-white w-full flex flex-col items-start justify-center px-4 py-4 border-2 rounded-xl relative active:scale-[99%] transition-all ease-in-out'>
+                                    <div className='flex gap-3 items-center'><FaCircle className='text-xs text-[#FF6900]' />Computer Science</div>
+                                    <div className='text-xs text-black/70 font-medium mt-2 w-full flex justify-between items-center'>
+                                        <div>This Month</div>
+                                        <div className='text-base text-black'>91%</div>
+                                    </div>
+                                    <CustomProgressBar value={91} color={"#FF6900"} />
+                                    <div className='text-xs text-black/60 font-medium w-full flex justify-between items-center mt-2'>35/42 classes</div>
+                                    <div></div>
+                                </div>
+
+                                <div className='bg-white w-full flex flex-col items-start justify-center px-4 py-4 border-2 rounded-xl relative active:scale-[99%] transition-all ease-in-out'>
+                                    <div className='flex gap-3 items-center'><FaCircle className='text-xs text-[#F6339A]' />Human Values</div>
+                                    <div className='text-xs text-black/70 font-medium mt-2 w-full flex justify-between items-center'>
+                                        <div>This Month</div>
+                                        <div className='text-base text-black'>80%</div>
+                                    </div>
+                                    <CustomProgressBar value={80} color={"#F6339A"} />
+                                    <div className='text-xs text-black/60 font-medium w-full flex justify-between items-center mt-2'>35/42 classes</div>
+                                    <div></div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
                     <div className='w-full h-11'></div>
                 </div>
 
