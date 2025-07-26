@@ -14,7 +14,7 @@ const AttendanceSchema = new Schema({
     subjects: {
         type: Map,
         of: new Schema({
-            "1": { type: [Schema.Types.Mixed], default: [] },
+            "1": { type: [Schema.Types.Mixed], default: [] }, // [1,0,S,H,0,....] 1-prsent 0-absent A-saturday, S sunday, H - holiday
             "2": { type: [Schema.Types.Mixed], default: [] },
             "3": { type: [Schema.Types.Mixed], default: [] },
             "4": { type: [Schema.Types.Mixed], default: [] },
